@@ -15,6 +15,10 @@ export interface SiriusXmSettings {
   /** null = import('puppeteer-core'). */
   loadPuppeteer: (() => Promise<any>) | null;
   browserLaunches: number;
+  /** Chrome channel when no executablePath is set; null for full puppeteer's bundled Chromium. */
+  channel: string | null;
+  /** Whether a thrown fetch is retried. Default: all but the caller's abort. */
+  isRetryable: (err: unknown) => boolean;
 }
 export function configure(options?: Partial<{ [K in keyof SiriusXmSettings]: SiriusXmSettings[K] | null }>): SiriusXmSettings;
 

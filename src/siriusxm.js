@@ -41,7 +41,21 @@ const settings = {
   loadPuppeteer: null,
   /** Browser launches, at most, before the mint gives up on the proxy's exits. */
   browserLaunches: 4,
+  /**
+   * The Chrome channel puppeteer-core looks for when no executablePath is set.
+   * null = pass none, which is what full `puppeteer` (bundled Chromium) wants.
+   */
+  channel: 'chrome',
+  /**
+   * Whether a THROWN fetch (not an HTTP status) is worth another attempt. Default:
+   * every throw except the caller's own abort. A site whose fetch can throw for
+   * its own reasons (a spent proxy budget, say) narrows this to network errors.
+   * @type {(err: unknown) => boolean}
+   */
+  isRetryable: () => true,
 };
+
+const DEFAULTS = { ...settings };
 
 /**
  * Set what this site injects: `fetch`, `proxyInit`, `browserMint`,
@@ -51,9 +65,9 @@ const settings = {
 export function configure(options = {}) {
   for (const [k, v] of Object.entries(options)) {
     if (!(k in settings)) throw new TypeError(`siriusxm.configure: unknown option ${k}`);
-    if (k === 'proxyInit' && v === null) settings.proxyInit = (proxy) => ({ proxy });
-    else if (k === 'browserLaunches' && v === null) settings.browserLaunches = 4;
-    else settings[k] = v;
+    // null puts a setting back to its default, except where null is itself a
+    // meaningful value (`channel: null` = no channel).
+    settings[k] = v === null && k !== 'channel' ? DEFAULTS[k] : v;
   }
   return { ...settings };
 }
@@ -194,6 +208,7 @@ export async function sxmFetch(url, init = {}, { proxy = null } = {}) {
     } catch (err) {
       lastErr = err;
       if (err?.name === 'AbortError' && init.signal?.aborted) throw err;
+      if (!settings.isRetryable(err)) throw err;
       fresh = true;
       await sleep(300 * (attempt + 1));
       continue;
@@ -351,7 +366,7 @@ async function mintInOneBrowser(puppeteer, proxyUrl) {
     settings.executablePath || globalThis.process?.env?.PUPPETEER_EXECUTABLE_PATH || undefined;
   const browser = await puppeteer.launch({
     headless: true,
-    ...(executablePath ? { executablePath } : { channel: 'chrome' }),
+    ...(executablePath ? { executablePath } : settings.channel ? { channel: settings.channel } : {}),
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',

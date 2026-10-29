@@ -50,6 +50,12 @@ sxm.configure({ proxyInit: (url) => ({ dispatcher: new ProxyAgent(url) }) });
 
 // Optional: your own fetch, a Chromium path, or no browser at all (tests).
 sxm.configure({ executablePath: '/usr/bin/chromium', browserMint: false });
+
+// Full puppeteer (bundled Chromium) instead of puppeteer-core, loaded from your app:
+sxm.configure({ loadPuppeteer: () => import('puppeteer'), channel: null });
+
+// Retry only network errors when your fetch can also throw for its own reasons:
+sxm.configure({ fetch: meteredFetch, isRetryable: (err) => err?.cause?.code === 'ECONNRESET' });
 ```
 
 Unset settings fall back to `PUPPETEER_EXECUTABLE_PATH` and `SIRIUSXM_BROWSER_MINT=off`, read at call time.

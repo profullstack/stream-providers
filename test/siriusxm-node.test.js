@@ -96,3 +96,27 @@ test('expiresSoon reads the JWT', () => {
   assert.equal(sxm.siriusxm.expiresSoon({ accessToken: token(Date.now() / 1000 + 3600) }), false);
   assert.equal(sxm.siriusxm.expiresSoon({ accessToken: 'opaque' }), false);
 });
+
+test('isRetryable narrows which thrown fetches are retried', async () => {
+  let n = 0;
+  sxm.configure({
+    fetch: async () => {
+      n++;
+      throw Object.assign(new Error('budget spent'), { code: 'BUDGET' });
+    },
+    isRetryable: (err) => err?.code !== 'BUDGET',
+  });
+  try {
+    await assert.rejects(sxm.sxmFetch('https://api.edge-gateway.siriusxm.com/x'), /budget spent/);
+    assert.equal(n, 1);
+  } finally {
+    sxm.configure({ fetch: null, isRetryable: null });
+  }
+  assert.equal(sxm.configure().isRetryable(new Error('x')), true);
+});
+
+test('channel null is kept as null, other nulls reset', () => {
+  assert.equal(sxm.configure({ channel: null }).channel, null);
+  assert.equal(sxm.configure({ channel: 'chrome', browserLaunches: null }).browserLaunches, 4);
+  assert.equal(sxm.configure().channel, 'chrome');
+});

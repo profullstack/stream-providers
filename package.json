@@ -1,6 +1,6 @@
 {
   "name": "@profullstack/stream-providers",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Sign a reader into their own streaming or radio account and pull lineups and playable stream URLs from it, one adapter per provider behind one interface: SiriusXM (emailed-code and password sign-in, residential-proxy aware, headless device-grant mint, HLS rewrite and AES key decode), Xtream Codes IPTV panels (login, account and connection limits, live/VOD/series, masked playlist URLs) and the ArgonTV reseller API (lines, extend, refund, public lineup). Injected fetch, proxy and browser; storage stays in your app.",
   "keywords": [
