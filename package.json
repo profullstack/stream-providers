@@ -1,0 +1,86 @@
+{
+  "name": "@profullstack/stream-providers",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Sign a reader into their own streaming or radio account and pull lineups and playable stream URLs from it, one adapter per provider behind one interface: SiriusXM (emailed-code and password sign-in, residential-proxy aware, headless device-grant mint, HLS rewrite and AES key decode), Xtream Codes IPTV panels (login, account and connection limits, live/VOD/series, masked playlist URLs) and the ArgonTV reseller API (lines, extend, refund, public lineup). Injected fetch, proxy and browser; storage stays in your app.",
+  "keywords": [
+    "streaming",
+    "stream-providers",
+    "siriusxm",
+    "sxm",
+    "satellite-radio",
+    "radio",
+    "iptv",
+    "xtream",
+    "xtream-codes",
+    "m3u",
+    "hls",
+    "argontv",
+    "iptv-reseller",
+    "byo-account",
+    "otp-login",
+    "residential-proxy",
+    "puppeteer",
+    "bun",
+    "node"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/profullstack/stream-providers.git"
+  },
+  "homepage": "https://github.com/profullstack/stream-providers#readme",
+  "bugs": {
+    "url": "https://github.com/profullstack/stream-providers/issues"
+  },
+  "license": "MIT",
+  "author": "Profullstack, Inc.",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./siriusxm": {
+      "types": "./siriusxm.d.ts",
+      "default": "./src/siriusxm.js"
+    },
+    "./xtream": {
+      "types": "./xtream.d.ts",
+      "default": "./src/xtream.js"
+    },
+    "./argontv": {
+      "types": "./argontv.d.ts",
+      "default": "./src/argontv.js"
+    },
+    "./errors": {
+      "types": "./index.d.ts",
+      "default": "./src/errors.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./src/index.js",
+  "types": "./index.d.ts",
+  "files": [
+    "src",
+    "*.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "puppeteer-core": ">=22"
+  },
+  "peerDependenciesMeta": {
+    "puppeteer-core": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "test": "node --test && bun test"
+  }
+}
